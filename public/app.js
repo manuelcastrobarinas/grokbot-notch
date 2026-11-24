@@ -416,13 +416,9 @@ window.addEventListener(
 // ============================================================================
 function reportHitRectToNative() {
   const pouch = dom.pouch;
-  const fittedWidth = pouch.style.width;
-  const fittedHeight = pouch.style.height;
   pouch.style.width = "";
   pouch.style.height = "";
   const naturalRect = pouch.getBoundingClientRect();
-  pouch.style.width = fittedWidth;
-  pouch.style.height = fittedHeight;
   const gripRect = dom.dragHandle.getBoundingClientRect();
   const bot = getSelectedBot();
   postNativeMessage({
@@ -1578,17 +1574,6 @@ window.__notchCommand = async (cmd) => {
       clearFittedSize();
       reportHitRectToNative();
       break;
-    case "fitWidget": {
-      const fittedWidth = Number(cmd.width);
-      const fittedHeight = Number(cmd.height);
-      if (fittedWidth >= 8 && fittedHeight >= 8) {
-        const nextWidth = `${Math.round(fittedWidth)}px`;
-        const nextHeight = `${Math.round(fittedHeight)}px`;
-        if (dom.pouch.style.width !== nextWidth) dom.pouch.style.width = nextWidth;
-        if (dom.pouch.style.height !== nextHeight) dom.pouch.style.height = nextHeight;
-      }
-      break;
-    }
     case "setNotchGeometry":
       if (cmd.notchWidth && cmd.notchWidth > 100) {
         document.documentElement.style.setProperty("--notch-width", `${cmd.notchWidth}px`);

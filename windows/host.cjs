@@ -339,23 +339,6 @@ function widgetBoundsFromHit(currentBounds) {
   };
 }
 
-let fitTimer = null;
-let pendingFit = null;
-
-function scheduleWidgetFit(width, height) {
-  pendingFit = { width, height };
-  if (fitTimer) clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => {
-    fitTimer = null;
-    if (!pendingFit) return;
-    if (draggingWindow) {
-      scheduleWidgetFit(pendingFit.width, pendingFit.height);
-      return;
-    }
-    sendCommand({ action: "fitWidget", width: pendingFit.width, height: pendingFit.height });
-  }, 120);
-}
-
 function applyWidgetBounds() {
   if (!notchWindow || notchWindow.isDestroyed()) return;
   const bounds = notchWindow.getBounds();
@@ -363,10 +346,8 @@ function applyWidgetBounds() {
   if (!snapped) return;
   const sameSize = snapped.width === bounds.width && snapped.height === bounds.height;
   const sameOrigin = Math.abs(snapped.x - bounds.x) < 1 && Math.abs(snapped.y - bounds.y) < 1;
-  if (!sameSize || !sameOrigin) {
-    notchWindow.setBounds(snapped);
-  }
-  scheduleWidgetFit(snapped.width, snapped.height);
+  if (sameSize && sameOrigin) return;
+  notchWindow.setBounds(snapped);
 }
 
 function syncWindowToWidget() {
